@@ -20,7 +20,7 @@ selected = st.selectbox("Select Team (Top 12 Powerhouses)", list(TEAMS.keys()))
 team_id = TEAMS[selected]
 
 # Free plan can't use 'last', so we use season + sort
-current_season = 2024  # 2024/25 season - allowed on free
+current_season = 2026  # 2026/27 season - allowed on free
 
 if st.button("🔴 LOAD LIVE LAST 5 GAMES", type="primary"):
     url = f"https://v3.football.api-sports.io/fixtures?team={team_id}&season={current_season}"
