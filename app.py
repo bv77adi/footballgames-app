@@ -1,9 +1,9 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="Top 13 - 2026 LIVE",page_icon="⚽", layout="wide")
+st.set_page_config(page_title="Top 13 - 2026 LIVE", page_icon="⚽", layout="wide")
 st.title("⚽ Top 13 Powerhouses - LAST 5 FROM 2026")
-st.caption("FREE: football-data.org | Green=Win Red=Loss")
+st.caption("FREE: football-data.org | Green=Win Red=Loss | BTTS + Over 3.5 calculated from score")
 
 TEAMS = {
     "Barcelona": 81, "Real Madrid": 86, "Atletico Madrid": 78,
@@ -18,50 +18,57 @@ if not API_TOKEN:
     st.stop()
 
 headers = {"X-Auth-Token": API_TOKEN}
-selected = st.selectbox("Select Team (Top 13)", list(TEAMS.keys()))
-team_id = TEAMS[selected]
 
-if st.button("🔴 LOAD LAST 5 FROM 2026", type="primary"):
-    url = f"https://api.football-data.org/v4/teams/{team_id}/matches?limit=30&status=FINISHED"
-    data = requests.get(url, headers=headers, timeout=15).json()
-    matches = data.get("matches", [])
-    matches_2026 = [m for m in matches if m["utcDate"].startswith("2026")]
-    matches_2026.sort(key=lambda x: x["utcDate"], reverse=True)
-    last5 = matches_2026[:5]
+def get_matches(team_id):
+    url = f"https://api.football-data.org/v4/teams/{team_id}/matches?status=FINISHED&limit=5"
+    r = requests.get(url, headers=headers, timeout=15)
+    if r.status_code != 200:
+        return []
+    return r.json().get("matches", [])[::-1]
 
-    wins = draws = losses = 0
-    for m in last5:
-        home = m["homeTeam"]["shortName"]
-        away = m["awayTeam"]["shortName"]
-        ft = m["score"]["fullTime"]
+def analyse(matches, team_name):
+    wins = draws = losses = btts = over35 = 0
+    goals_for = goals_against = 0
+    for m in matches:
+        s = m["score"]["fullTime"]
         ht = m["score"]["halfTime"]
-        date = m["utcDate"][:10]
-        comp = m["competition"]["name"]
-        winner = m["score"]["winner"]
-        
-        # Determine if selected team won
-        is_home = m["homeTeam"]["id"] == team_id
-        if (is_home and winner == "HOME_TEAM") or (not is_home and winner == "AWAY_TEAM"):
-            color = "#00C853"  # GREEN WIN
-            result_icon = "✅ WIN"
-            wins+=1
-        elif winner == "DRAW":
-            color = "#9E9E9E"  # GREY DRAW
-            result_icon = "➖ DRAW"
-            draws+=1
+        home = m["homeTeam"]["name"]
+        away = m["awayTeam"]["name"]
+        # find our score
+        if team_name in home:
+            gf, ga = s["home"], s["away"]
         else:
-            color = "#D50000"  # RED LOSS
-            result_icon = "❌ LOSS"
-            losses+=1
+            gf, ga = s["away"], s["home"]
+        if gf is None: continue
+        goals_for += gf; goals_against += ga
+        if gf > ga: wins += 1
+        elif gf == ga: draws += 1
+        else: losses += 1
+        if gf > 0 and ga > 0: btts += 1
+        if gf + ga > 3: over35 += 1
+    n = max(1, len(matches))
+    return wins, draws, losses, btts, over35, goals_for, goals_against, n
 
-        st.markdown(f"""
-        <div style="border-left:6px solid {color}; padding:10px; margin:8px 0; background:#f9f9f9; border-radius:8px">
-        <b style="color:{color}">{result_icon}</b> — <b>{home} {ft['home']}-{ft['away']} {away}</b><br>
-        HT: {ht['home']}-{ht['away']} | {date} | {comp}
-        </div>
-        """, unsafe_allow_html=True)
-
-    c1,c2,c3 = st.columns(3)
-    c1.metric("✅ Wins", wins)
-    c2.metric("➖ Draws", draws)
-    c3.metric("❌ Losses", losses)
+# --- ALL 13 OVERVIEW ---
+st.subheader("📊 All 13 Teams - Last 5 Form")
+if st.button("🔄 LOAD ALL 13 TEAMS", type="primary"):
+    for name, tid in TEAMS.items():
+        matches = get_matches(tid)
+        if not matches:
+            st.write(f"{name}: No data")
+            continue
+        w, d, l, btts, o35, gf, ga, n = analyse(matches, name)
+        with st.expander(f"{name}  |  {w}W - {d}D - {l}L  |  BTTS: {btts}/{n}  |  Over 3.5: {o35}/{n}  |  Goals: {gf}-{ga}"):
+            for m in matches:
+                s = m["score"]["fullTime"]
+                ht = m["score"]["halfTime"]
+                home = m["homeTeam"]["shortName"] or m["homeTeam"]["name"]
+                away = m["awayTeam"]["shortName"] or m["awayTeam"]["name"]
+                total = (s["home"] or 0) + (s["away"] or 0)
+                is_btts = "✅ YES" if s["home"] > 0 and s["away"] > 0 else "❌ NO"
+                is_o35 = "✅ OVER" if total > 3 else "❌ UNDER"
+                date = m["utcDate"][:10]
+                comp = m["competition"]["name"]
+                st.markdown(f"**{home} {s['home']}-{s['away']} {away}** | HT: {ht['home']}-{ht['away']} | {date} | {comp}")
+                st.caption(f"BTTS: {is_btts} | Over 3.5: {is_o35} | Total Goals: {total}")
+                st.divider()
