@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="Top 13 - 2026 LIVE", layout="wide")
+st.set_page_config(page_title="Top 13 - 2026 LIVE",page_icon="⚽", layout="wide")
 st.title("⚽ Top 13 Powerhouses - LAST 5 FROM 2026")
 st.caption("FREE: football-data.org | Green=Win Red=Loss")
 
