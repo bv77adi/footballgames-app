@@ -19,7 +19,7 @@ if not API_TOKEN:
     st.stop()
 
 headers = {"X-Auth-Token": API_TOKEN}
-
+@st.cache_data(ttl=3600)
 def get_matches(team_id):
     url = f"https://api.football-data.org/v4/teams/{team_id}/matches?status=FINISHED&limit=5"
     for _ in range(3):
