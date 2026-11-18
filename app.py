@@ -9,7 +9,7 @@ st.caption("FREE: football-data.org | Green=Win Red=Loss | BTTS + Over 3.5 calcu
 TEAMS = {
     "Barcelona": 81, "Real Madrid": 86, "Atletico Madrid": 78,
     "Manchester City": 65, "Liverpool": 64, "Arsenal": 57,
-    "Chelsea": 61, "Bayern Munich": 5, "Manchester United": 66
+    "Chelsea": 61, "Bayern Munich": 5, "Manchester United": 66,
      "Inter Milan": 108, "AC Milan": 98, "Paris Saint-Germain": 524, 
 }
 
