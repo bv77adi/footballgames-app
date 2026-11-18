@@ -54,8 +54,18 @@ def analyse(matches, team_name):
 
 # --- ALL 13 OVERVIEW ---
 st.subheader("📊 All 13 Teams - Last 5 Form")
-if st.button("🔄 LOAD ALL 13 TEAMS", type="primary"):
-    for name, tid in TEAMS.items():
+col1, col2 = st.columns(2)
+with col1:
+    load_first = st.button("🔄 LOAD TEAMS 1-7", type="primary")
+with col2:
+    load_second = st.button("🔄 LOAD TEAMS 8-13")
+if load_first or load_second:
+    teams_to_load = list(TEAMS.items())
+    if load_first:
+        teams_to_load = teams_to_load[:7]
+    else:
+        teams_to_load = teams_to_load[7:]
+    for name, tid in teams_to_load:
         matches = get_matches(tid)
         if not matches:
             st.write(f"{name}: No data")
