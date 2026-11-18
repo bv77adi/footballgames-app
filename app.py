@@ -2,15 +2,15 @@ import streamlit as st
 import requests
 import time
 
-st.set_page_config(page_title="Top 13 - 2026 LIVE", page_icon="⚽", layout="wide")
-st.title("⚽ Top 13 Powerhouses - LAST 5 FROM 2026")
+st.set_page_config(page_title="Top 12 - 2026 LIVE", page_icon="⚽", layout="wide")
+st.title("⚽ Top 12 Powerhouses - LAST 5 FROM 2026")
 st.caption("FREE: football-data.org | Green=Win Red=Loss | BTTS + Over 3.5 calculated from score")
 
 TEAMS = {
     "Barcelona": 81, "Real Madrid": 86, "Atletico Madrid": 78,
     "Manchester City": 65, "Liverpool": 64, "Arsenal": 57,
-    "Chelsea": 61, "Bayern Munich": 5, "Borussia Dortmund": 4,
-    "Inter Milan": 108, "AC Milan": 98, "Paris Saint-Germain": 524, "Manchester United": 66
+    "Chelsea": 61, "Bayern Munich": 5, "Manchester United": 66
+     "Inter Milan": 108, "AC Milan": 98, "Paris Saint-Germain": 524, 
 }
 
 API_TOKEN = st.secrets.get("FOOTBALL_DATA_TOKEN", "")
@@ -52,19 +52,19 @@ def analyse(matches, team_name):
     n = max(1, len(matches))
     return wins, draws, losses, btts, over35, goals_for, goals_against, n
 
-# --- ALL 13 OVERVIEW ---
-st.subheader("📊 All 13 Teams - Last 5 Form")
+# --- ALL 12 OVERVIEW ---
+st.subheader("📊 All 12 Teams - Last 5 Form")
 col1, col2 = st.columns(2)
 with col1:
-    load_first = st.button("🔄 LOAD TEAMS 1-7", type="primary")
+    load_first = st.button("🔄 LOAD TEAMS 1-6", type="primary")
 with col2:
-    load_second = st.button("🔄 LOAD TEAMS 8-13")
+    load_second = st.button("🔄 LOAD TEAMS 7-12")
 if load_first or load_second:
     teams_to_load = list(TEAMS.items())
     if load_first:
-        teams_to_load = teams_to_load[:7]
+        teams_to_load = teams_to_load[:6]
     else:
-        teams_to_load = teams_to_load[7:]
+        teams_to_load = teams_to_load[6:]
     for name, tid in teams_to_load:
         matches = get_matches(tid)
         if not matches:
