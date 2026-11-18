@@ -9,7 +9,7 @@ TEAMS = {
     "Barcelona": 81, "Real Madrid": 86, "Atletico Madrid": 78,
     "Manchester City": 65, "Liverpool": 64, "Arsenal": 57,
     "Chelsea": 61, "Bayern Munich": 5, "Borussia Dortmund": 4,
-    "Inter Milan": 108, "AC Milan": 98, "PSG": 524, "Manchester United": 66
+    "Inter Milan": 108, "AC Milan": 98, "Paris Saint-Germain": 524, "Manchester United": 66
 }
 
 API_TOKEN = st.secrets.get("FOOTBALL_DATA_TOKEN", "")
