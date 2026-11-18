@@ -1,8 +1,8 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="Top 12 - 2026 LIVE", layout="wide")
-st.title("⚽ Top 12 Powerhouses - LAST 5 FROM 2026")
+st.set_page_config(page_title="Top 13 - 2026 LIVE", layout="wide")
+st.title("⚽ Top 13 Powerhouses - LAST 5 FROM 2026")
 st.caption("FREE: football-data.org | Green=Win Red=Loss")
 
 TEAMS = {
@@ -18,7 +18,7 @@ if not API_TOKEN:
     st.stop()
 
 headers = {"X-Auth-Token": API_TOKEN}
-selected = st.selectbox("Select Team (Top 12)", list(TEAMS.keys()))
+selected = st.selectbox("Select Team (Top 13)", list(TEAMS.keys()))
 team_id = TEAMS[selected]
 
 if st.button("🔴 LOAD LAST 5 FROM 2026", type="primary"):
