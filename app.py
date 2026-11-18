@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import time
 
 st.set_page_config(page_title="Top 13 - 2026 LIVE", page_icon="⚽", layout="wide")
 st.title("⚽ Top 13 Powerhouses - LAST 5 FROM 2026")
@@ -21,10 +22,12 @@ headers = {"X-Auth-Token": API_TOKEN}
 
 def get_matches(team_id):
     url = f"https://api.football-data.org/v4/teams/{team_id}/matches?status=FINISHED&limit=5"
-    r = requests.get(url, headers=headers, timeout=15)
-    if r.status_code != 200:
-        return []
-    return r.json().get("matches", [])[::-1]
+    for _ in range(3):
+        r = requests.get(url, headers=headers, timeout=15)
+        if r.status_code == 200:
+            return r.json().get("matches", [])[::-1]
+        time.sleep(7)  # wait for free API limit
+    return []
 
 def analyse(matches, team_name):
     wins = draws = losses = btts = over35 = 0
